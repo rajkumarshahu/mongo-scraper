@@ -12,7 +12,7 @@ var db = require("../models");
 // Routes
 // =============================================================
 module.exports = function(app){
-    // GET route for getting all of the emojis
+    // GET route for getting all of the articles
     app.get("/api/all", function(req, res) {
 
       });

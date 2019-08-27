@@ -1,3 +1,4 @@
+require('dotenv').config()
 var express = require("express");
 //var logger = require("morgan");
 var mongoose = require("mongoose");
@@ -42,11 +43,9 @@ require("./routes/html-api-routes.js")(app);
 
 
 // Connect to the Mongo DB
-mongoose.connect("mongodb://localhost/mongoScrapper", { useNewUrlParser: true }, ()=>{
+mongoose.connect(process.env.MONGODB, { useNewUrlParser: true }, ()=>{
   console.log("MongoDB connected...")
 });
-
-
 
 // Start the server
 app.listen(PORT, function() {
