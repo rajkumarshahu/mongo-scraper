@@ -3,7 +3,7 @@ $(document).ready(function(){
     $('.collapsible').collapsible();
     $('.modal').modal();
     $("#scrape-btn").on("click", function(e){
-        window.location.href = "/scrape";
+        window.location.href = "/index";
     })
 
     $(".clear-btn").on("click", function(e){

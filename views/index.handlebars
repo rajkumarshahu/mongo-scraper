@@ -1,4 +1,5 @@
 
+{{> button}}
 <div>
     {{#each articles}}
         <ul class="collection">
@@ -8,12 +9,13 @@
                     <a href="https://www.bbc.com/{{ this.link }}" target="_blank">{{ this.title }}</a>
                 </h4>
                 <p>{{this.snippet}}</p>
-                <button type="submit" form="hidden-form{{ this.id }}" class="secondary-content">
+                <button type="submit" form="hidden-form-{{ this.id }}" class="secondary-content">
                         Save Article
                 </button>
-                <form action="/articles/{{ this.id }}" method="POST" id="hidden-form{{ this.id }}" class="">
+                <form action="/articles/{{ this.id }}" method="POST" id="hidden-form-{{ this.id }}" class="">
                 <input type="hidden" name="title" value="{{ this.title }}"></input>
                 <input type="hidden" name="link" value="{{ this.link }}"></input>
+                <input type="hidden" name="imageUrl" value="{{ this.imageUrl }}"></input>
             </form>
             </li>
 

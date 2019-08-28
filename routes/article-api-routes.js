@@ -19,21 +19,20 @@ module.exports = function(app) {
         res.render("message", {message: "No articles saved. Please click Scrape it button to get news from BBC."});
       }
       else{
-        res.render("home", {articles: data});
+        res.render("index", {articles: data});
       }
     });
 
   });
 
-  // A GET route for scraping the echoJS website
-  app.get("/scrape", function(req, res) {
+  // A GET route for scraping the  website
+  app.get("/index", function(req, res) {
     var storeArr = [];
     // First, we grab the body of the html with axios
-  axios.get("https://www.bbc.com/news/world/us_and_canada").then(function(response) {
+  axios.get("https://www.bbc.com/news/world/").then(function(response) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(response.data);
 
-    // Now, we grab every h2 within an article tag, and do the following:
     $(".gs-c-promo").each(function(i, element) {
       // Save an empty result object
       var result = {};
@@ -49,7 +48,7 @@ module.exports = function(app) {
         .find("p.gs-c-promo-summary")
         .text()
         result.imageUrl = $(this)
-        .find("img")
+        .find("div > div > .gs-o-media-island > div > img")
         .attr("src");
 
         // Push new article object to storeArr
@@ -69,10 +68,10 @@ module.exports = function(app) {
         // If there is an error or the entry already exists
         // log the error in the console and redirect to index
         console.log(err);
-        res.redirect("/scrape");
+        res.redirect("/index");
       } else {
         // redirect to index
-        res.redirect("/scrape");
+        res.redirect("/index");
       }
     });
   });
@@ -82,11 +81,13 @@ module.exports = function(app) {
     // Grab every document in the Articles collection
     db.Article.find({})
       .populate("note")
-      .then(function(dbArticle) {
-        // If we were able to successfully find Articles, send them back to the client
-        //res.json(dbArticle);
-        res.render("articles", { articles: dbArticle });
+      .then(function(dbArticle){
+        var allSavedArticles = dbArticle.map(function(article) {
+          return article;
+      });
+      res.render("articles", { articles: allSavedArticles });
       })
+
       .catch(function(err) {
         // If an error occurred, send it to the client
         res.json(err);
@@ -126,7 +127,8 @@ module.exports = function(app) {
       })
       .then(function(dbArticle) {
         // If we were able to successfully update an Article, send it back to the client
-        res.json(dbArticle);
+
+        res.render("articles", { notes: dbArticle });
       })
       .catch(function(err) {
         // If an error occurred, send it to the client
@@ -134,41 +136,25 @@ module.exports = function(app) {
       });
   });
 
-  // Route to post note
-  app.post("/note", function(req, res) {
-    // Load the req.body into a variable for ease of use
-    var note = req.body;
-    // Find the appropriate article document
-    db.Article.findOne(
-      {
-        title: note.title,
-      },
-      function(err, dbArticle) {
-        console.log(dbArticle)
-        // Create new comment document
-        db.Note.create(
-          {
-            _article: dbArticle._id,
-            text: note.text,
-          },
-          function(err, doc) {
-            // Push comment doc to article
-            dbArticle.note.push(doc);
-            // Save the article doc
-            dbArticle.save(function(err) {
-              if (err) {
-                // If error, send error
-                res.send(err);
-              } else {
-                // Redirect to saved articles
-                res.redirect("/articles");
-              }
-            });
-          }
-        );
-      }
-    );
-  });
+  // Route for saving a new Note to the db and associating it with a article
+app.post("/submit", function(req, res) {
+  // Create a new Note in the db
+  db.Note.create(req.body)
+    .then(function(dbNote) {
+      // If a Note was created successfully, find one User (there's only one) and push the new Note's _id to the User's `notes` array
+      // { new: true } tells the query that we want it to return the updated User -- it returns the original by default
+      // Since our mongoose query returns a promise, we can chain another `.then` which receives the result of the query
+      return db.Article.findOneAndUpdate({}, { $push: { notes: dbNote._id } }, { new: true });
+    })
+    .then(function(dbArticle) {
+      // If the User was updated successfully, send it back to the client
+      res.redirect("/articles", );
+    })
+    .catch(function(err) {
+      // If an error occurs, send it back to the client
+      res.json(err);
+    });
+});
 
   app.get("/delete", function(req, res){
     db.Article.deleteMany().then(function() {
@@ -181,11 +167,11 @@ module.exports = function(app) {
 
   })
 
-  // Route to delete a comment
+  // Route to delete a note
   app.delete('/note', function(req, res) {
     // Load the req.body.id into a variable for ease of use
     var noteId = req.body.id;
-    // Remove the appropriate comments
+    // Remove the appropriate note
     db.Note.remove({ _id: noteId }, function(err, comment) {
         if (err) {
             // If error, send error
