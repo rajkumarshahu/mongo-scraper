@@ -39,7 +39,7 @@ require("./routes/html-api-routes.js")(app);
 
 
 // Connect to the Mongo DB
-mongoose.connect(process.env.MONGODB, { useNewUrlParser: true }, ()=>{
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true }, ()=>{
   console.log("MongoDB connected...")
 });
 
