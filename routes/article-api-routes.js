@@ -13,7 +13,16 @@ var db = require("../models");
 // =============================================================
 module.exports = function(app) {
   app.get("/", function(req, res) {
-    res.render("home");
+
+    db.Article.find({}, null, {sort: {created: -1}}, function(err, data) {
+      if(data.length === 0) {
+        res.render("message", {message: "No articles saved. Please click Scrape it button to get news from BBC."});
+      }
+      else{
+        res.render("home", {articles: data});
+      }
+    });
+
   });
 
   // A GET route for scraping the echoJS website
@@ -25,7 +34,7 @@ module.exports = function(app) {
     var $ = cheerio.load(response.data);
 
     // Now, we grab every h2 within an article tag, and do the following:
-    $(".gs-c-promo-body").each(function(i, element) {
+    $(".gs-c-promo").each(function(i, element) {
       // Save an empty result object
       var result = {};
 
@@ -36,6 +45,12 @@ module.exports = function(app) {
       result.link = $(this)
         .find("div > a")
         .attr("href");
+      result.snippet = $(this)
+        .find("p.gs-c-promo-summary")
+        .text()
+        result.imageUrl = $(this)
+        .find("img")
+        .attr("src");
 
         // Push new article object to storeArr
         storeArr.push(result);
@@ -54,10 +69,10 @@ module.exports = function(app) {
         // If there is an error or the entry already exists
         // log the error in the console and redirect to index
         console.log(err);
-        res.redirect("/index");
+        res.redirect("/scrape");
       } else {
         // redirect to index
-        res.redirect("/index");
+        res.redirect("/scrape");
       }
     });
   });
@@ -69,13 +84,14 @@ module.exports = function(app) {
       .populate("note")
       .then(function(dbArticle) {
         // If we were able to successfully find Articles, send them back to the client
-        res.json(dbArticle);
+        //res.json(dbArticle);
+        res.render("articles", { articles: dbArticle });
       })
       .catch(function(err) {
         // If an error occurred, send it to the client
         res.json(err);
       });
-    res.render("articles", { articles: dbArticle });
+
   });
 
   // Route for grabbing a specific Article by id, populate it with it's note
@@ -121,24 +137,25 @@ module.exports = function(app) {
   // Route to post note
   app.post("/note", function(req, res) {
     // Load the req.body into a variable for ease of use
-    var comment = req.body;
+    var note = req.body;
     // Find the appropriate article document
     db.Article.findOne(
       {
         title: note.title,
       },
-      function(err, article) {
+      function(err, dbArticle) {
+        console.log(dbArticle)
         // Create new comment document
         db.Note.create(
           {
-            _article: article._id,
+            _article: dbArticle._id,
             text: note.text,
           },
           function(err, doc) {
             // Push comment doc to article
-            article.note.push(doc);
+            dbArticle.note.push(doc);
             // Save the article doc
-            article.save(function(err) {
+            dbArticle.save(function(err) {
               if (err) {
                 // If error, send error
                 res.send(err);
@@ -152,4 +169,31 @@ module.exports = function(app) {
       }
     );
   });
+
+  app.get("/delete", function(req, res){
+    db.Article.deleteMany().then(function() {
+      res.redirect("/");
+    })
+    .catch(function(err) {
+      // If an error occurred, send it to the client
+      res.json(err);
+    });
+
+  })
+
+  // Route to delete a comment
+  app.delete('/note', function(req, res) {
+    // Load the req.body.id into a variable for ease of use
+    var noteId = req.body.id;
+    // Remove the appropriate comments
+    db.Note.remove({ _id: noteId }, function(err, comment) {
+        if (err) {
+            // If error, send error
+            res.send(err);
+        } else {
+            // Redirect to saved articles
+            res.redirect('/articles');
+        }
+    });
+});
 };
