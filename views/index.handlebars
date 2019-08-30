@@ -1,4 +1,4 @@
-
+{{message}}
 {{> button}}
 <div>
     {{#each articles}}
@@ -8,13 +8,16 @@
                 <h4 class="">
                     <a href="https://www.bbc.com/{{ this.link }}" target="_blank">{{ this.title }}</a>
                 </h4>
-                <p>{{this.snippet}}</p>
-                <button type="submit" form="hidden-form-{{ this.id }}" class="secondary-content waves-effect waves-light btn-large">
+                </p>{{this.snippet}}</p>
+                </p>{{this.id}}</p>
+                <button type="submit" form="hidden-form-{{ this.id }}" class="secondary-content waves-effect waves-light btn-large tooltipped" data-position="bottom" data-tooltip="Save this news!">
                         <i class="material-icons">save</i>
                 </button>
-                <form action="/articles/{{ this._id }}" method="POST" id="hidden-form-{{ this.id }}" class="">
+
+                <form action="/articles" method="POST" id="hidden-form-{{ this.id }}" class="">
                 <input type="hidden" name="title" value="{{ this.title }}"></input>
                 <input type="hidden" name="link" value="{{ this.link }}"></input>
+                <input type="hidden" name="snippet" value="{{ this.snippet }}"></input>
                 <input type="hidden" name="imageUrl" value="{{ this.imageUrl }}"></input>
             </form>
             </li>

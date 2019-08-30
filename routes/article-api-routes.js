@@ -35,9 +35,11 @@ module.exports = function(app) {
 
       $(".gs-c-promo").each(function(i, element) {
         // Save an empty result object
+
         var result = {};
 
         // Add the text and href of every link, and save them as properties of the result object
+        result.id = i + 1;
         result.title = $(this)
           .find("div > a > h3")
           .text();
@@ -53,6 +55,7 @@ module.exports = function(app) {
 
         // Push new article object to storeArr
         storeArr.push(result);
+
       });
       res.render("index", { articles: storeArr });
     });
@@ -60,8 +63,10 @@ module.exports = function(app) {
 
   // This is the route used to save an article
   app.post("/articles", function(req, res) {
+
     // Load the req.body into a variable for ease of use
     var savedArticle = req.body;
+    console.log(savedArticle)
     // Create the new article document
     db.Article.create(savedArticle, function(err, doc) {
       if (err) {
@@ -115,6 +120,7 @@ module.exports = function(app) {
 
   // Route for saving/updating an Article's associated Note
   app.post("/articles/:id", function(req, res) {
+    console.log("Req",req.body)
     // Create a new note and pass the req.body to the entry
     db.Note.create(req.body)
       .then(function(dbNote) {

@@ -2,6 +2,7 @@ $(document).ready(function(){
     $('.sidenav').sidenav();
     $('.collapsible').collapsible();
     $('.modal').modal();
+    $('.tooltipped').tooltip();
     $("#scrape-btn").on("click", function(e){
         window.location.href = "/index";
     })
