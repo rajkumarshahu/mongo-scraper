@@ -157,7 +157,7 @@ module.exports = function(app) {
             // Since our mongoose query returns a promise, we can chain another `.then` which receives the result of the query
             return db.Article.findOneAndUpdate(
               { _id: note.article_id },
-              { note: dbNote._id },
+              { $push: { note: dbNote._id } },
               { new: true }
             );
         }).then(function(dbArticle) {
@@ -194,15 +194,34 @@ module.exports = function(app) {
   app.post("/deleteNote", function(req, res) {
     // Load the req.body.id into a variable for ease of use
     var noteId = req.body.id;
-    // Remove the appropriate note
-    db.Note.remove({ _id: noteId }, function(err, note) {
-      if (err) {
-        // If error, send error
-        res.send(err);
-      } else {
-        // Redirect to saved articles
-        res.redirect("/articles");
+
+    db.Note.find({_id:noteId})
+    .exec(function(err, note) {
+
+      if(!note[0]._article) {
+        console.log('Error!');
+        return false;
       }
+      db.Article.updateOne(
+        {_id: note[0]._article},
+        {$pull : {note: noteId }},
+        function (err, numAffected) {
+          if(err) {
+            console.log(err);
+          } else {
+            db.Note.remove({ _id: noteId }, function(err, note) {
+              if (err) {
+                // If error, send error
+                res.send(err);
+              } else {
+                // Redirect to saved articles
+                res.redirect("/articles");
+              }
+            });
+          }
+        }
+      );
     });
+
   });
 };
