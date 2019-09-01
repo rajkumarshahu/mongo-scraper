@@ -111,6 +111,7 @@ module.exports = function(app) {
           // If error send error
           res.send(err);
         } else {
+          console.log(articles);
           // Save each article document into an array
           var allSavedArticles = articles.map(function(article) {
             return article;
