@@ -10,8 +10,4 @@ $(document).ready(function(){
     $(".clear-btn").on("click", function(e){
         window.location.href = "/delete";
     })
-
-
-
-
 });

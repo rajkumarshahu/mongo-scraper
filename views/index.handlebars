@@ -4,12 +4,12 @@
     {{#each articles}}
         <ul class="collection">
             <li class="collection-item avatar">
-            <img src="{{this.imageUrl}}" alt="image" class="circle">
+            <img src="https://www.aljazeera.com/{{this.imageUrl}}" alt="image" class="circle">
                 <h4 class="">
-                    <a href="https://www.bbc.com/{{ this.link }}" target="_blank">{{ this.title }}</a>
+                    <a href="https://www.aljazeera.com/{{ this.link }}" target="_blank"><small>{{ this.title }}</small></a>
                 </h4>
-                </p>{{this.snippet}}</p>
-                </p>{{this.id}}</p>
+                </h4 class="">{{this.snippet}}</h4>
+                {{!-- </p>{{this.id}}</p> --}}
                 <button type="submit" form="hidden-form-{{ this.id }}" class="secondary-content waves-effect waves-light btn-large tooltipped" data-position="bottom" data-tooltip="Save this news!">
                         <i class="material-icons">save</i>
                 </button>

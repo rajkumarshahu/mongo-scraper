@@ -4,21 +4,23 @@
         <li>
             <div class="collapsible-header" id="heading-{{ this._id }}">
                 <h4 class="panel-title text-center">
-                    <a href="https://www.bbc.com/{{ this.link }}" target="_blank">{{ this.title }}</a>
+                    <a href="https://www.bbc.com/{{ this.link }}" target="_blank"><small>{{ this.title }}</small></a>
                 </h4>
                 <hr>
-                <button class="btn" data-toggle="collapse" data-parent="#accordion" href="#collapse-{{ this._id }}" aria-expanded="true" aria-controls="collapse-{{ this._id }}">
-                    See Your Comments
+                <button class="secondary-content waves-effect waves-light btn-large tooltipped" data-position="bottom" data-tooltip="View your comment" data-toggle="collapse" data-parent="#accordion" href="#collapse-{{ this._id }}" aria-expanded="true" aria-controls="collapse-{{ this._id }}">
+                    <i class="material-icons">visibility</i>
                 </button>
             </div>
             <div id="collapse-{{ this._id }}" class="collapsible-body">
             <h6>Your Comments</h6>
+
                 <ul >
                 {{#each notes}}
                     <li class="">
                         <div class="">
                             <div class="">
-                                <p class="">{{ this.text }}</p>
+                                <p>{{noteMessage}}</p>
+                                <p class="">{{ notes.text }}</p>
                             </div>
                             <div class="">
                                 <button type="submit" form="hidden-form-{{ this.id }}" class="btn">Delete</button>
@@ -32,24 +34,24 @@
 
                 {{/each}}
                 </ul>
-                 <!-- Modal Trigger -->
-            <button data-target="note-modal-{{ this._id }}" class="btn modal-trigger">Add a Comment</button>
-            <!-- Modal Structure -->
-            <div id="note-modal-{{ this._id }}" class="modal">
-                <div class="modal-content">
-                    <h4>Add Comment</h4>
-                    <p>Your notes here: </p>
-                        <form action="/submit" class="form" method="POST">
-                            <div class="form-group">
-                                <textarea class="form-control" rows="7" name="text"></textarea>
-                                <input type="hidden" name="title" value="{{ this.title }}"></input>
-                                <hr>
-                                <button type="submit" class="btn">Save changes</button>
+                        <!-- Modal Trigger -->
+                    <button data-target="note-modal-{{ this._id }}" class="btn modal-trigger">Add a Comment</button>
+                    <!-- Modal Structure -->
+                    <div id="note-modal-{{ this._id }}" class="modal">
+                        <div class="modal-content">
+                            <h4>Add Comment</h4>
+                            <p>Your notes here: </p>
+                                <form action="/submit" class="form" method="POST">
+                                    <div class="form-group">
+                                        <textarea class="form-control" rows="7" name="text"></textarea>
+                                        <input type="hidden" name="title" value="{{ this.title }}"></input>
+                                        <hr>
+                                        <button type="submit" class="btn">Save changes</button>
+                                    </div>
+                                </form>
                             </div>
-                        </form>
-                    </div>
-                </div>
-            <hr>
+                        </div>
+                    <hr>
 
             </div>
         </li>

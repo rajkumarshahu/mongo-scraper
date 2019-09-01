@@ -33,8 +33,8 @@ app.use(express.static("public"));
 // Routes
 // =============================================================
 require("./routes/article-api-routes.js")(app);
-require("./routes/note-api-routes.js")(app);
-require("./routes/html-api-routes.js")(app);
+//require("./routes/note-api-routes.js")(app);
+//require("./routes/html-api-routes.js")(app);
 
 
 

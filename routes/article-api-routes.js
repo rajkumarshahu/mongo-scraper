@@ -9,11 +9,16 @@ var cheerio = require("cheerio");
 // Requiring our models
 var db = require("../models");
 
+var getAllLinks = function(article) {
+  return article.link;
+}
+
 // Routes
 // =============================================================
 module.exports = function(app) {
   app.get("/", function(req, res) {
     db.Article.find({}, null, { sort: { created: -1 } }, function(err, data) {
+      console.log(data);
       if (data.length === 0) {
         res.render("message", {
           message:
@@ -25,39 +30,53 @@ module.exports = function(app) {
     });
   });
 
-  // A GET route for scraping the  website
+  app.get("/note", function(req, res) {
+    db.Note.find({}, null, function(err, data) {
+      console.log(data)
+      if (data.length === 0) {
+        res.render("notemessage", {
+          noteMessage:
+            "No notes saved. Please click add note  button.",
+        });
+      } else {
+        res.render("articles", { notes: data });
+      }
+    });
+  });
+  // scrapped page is index
   app.get("/index", function(req, res) {
     var storeArr = [];
-    // First, we grab the body of the html with axios
-    axios.get("https://www.bbc.com/news/world/").then(function(response) {
-      // Then, we load that into cheerio and save it to $ for a shorthand selector
-      var $ = cheerio.load(response.data);
 
-      $(".gs-c-promo").each(function(i, element) {
-        // Save an empty result object
+    var article_links = [];
 
-        var result = {};
+    db.Article.find({}, null, function(err, articles) {
+      article_links = articles.map(getAllLinks);
 
-        // Add the text and href of every link, and save them as properties of the result object
-        result.id = i + 1;
-        result.title = $(this)
-          .find("div > a > h3")
-          .text();
-        result.link = $(this)
-          .find("div > a")
-          .attr("href");
-        result.snippet = $(this)
-          .find("p.gs-c-promo-summary")
-          .text();
-        result.imageUrl = $(this)
-          .find("div > div > .gs-o-media-island > div > img")
-          .attr("src");
+      // First, we grab the body of the html with axios
+      axios.get("https://www.aljazeera.com/topics/country/canada.html").then(function(response) {
+        // Then, we load that into cheerio and save it to $ for a shorthand selector
+        var $ = cheerio.load(response.data);
 
-        // Push new article object to storeArr
-        storeArr.push(result);
+        $("div.row.topics-sec-item.default-style").each(function(i, element) {
+          if(i >= 10){
+            return false;
+          }
 
+          var result = {};
+          result.id = i + 1;
+          result.title = $(this).children('div.topics-sec-item-cont').children('a').children('h2').text();
+          result.link = $(this).children('div.topics-sec-item-cont').children('a').attr('href');
+          result.snippet = $(this).children('div.topics-sec-item-cont').children('p.topics-sec-item-p').text();
+          result.imageUrl = $(this).children('div.topics-sec-item-img').children('a').children('img.img-responsive').attr('src');
+
+          if(!article_links.includes(result.link)) {
+            storeArr.push(result);
+          }
+        });
+        res.render("index", { articles: storeArr });
       });
-      res.render("index", { articles: storeArr });
+
+
     });
   });
 
@@ -143,36 +162,6 @@ module.exports = function(app) {
         res.json(err);
       });
   });
-
-
-  //   // Route to pust comments
-  //   app.post('/submit', function(req, res) {
-  //     // Load the req.body into a variable for ease of use
-  //     var note = req.body;
-  //     // Find the appropriate article document
-  //     db.Article.findOne({
-  //         title: note.title
-  //     }, function(err, article) {
-  //         // Create new comment document
-  //         db.Note.create({
-  //             _article: article._id,
-  //             text: note.text
-  //         }, function(err, doc) {
-  //             // Push note doc to article
-  //             article.note.push(doc);
-  //             // Save the article doc
-  //             article.save(function(err) {
-  //                 if (err) {
-  //                     // If error, send error
-  //                     res.send(err);
-  //                 } else {
-  //                     // Redirect to saved articles
-  //                     res.redirect('/articles');
-  //                 }
-  //             });
-  //         });
-  //     });
-  // });
 
   // Route for saving a new Note to the db and associating it with a article
   app.post("/submit", function(req, res) {
