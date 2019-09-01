@@ -12,20 +12,21 @@ var ArticleSchema = new Schema({
   },
   link: {
     type: String,
-    trim: true,
-    required: true
+    required: true,
+    unique:true
   },
   snippet:{
       type: String,
       trim: true
   },
+  imageUrl:{
+    type: String
+},
   timestamp: {
     type: Date,
     default: Date.now
 },
-  imageUrl:{
-      type: String
-  },
+
 
   // `note` is an object that stores a Note id
   // The ref property links the ObjectId to the Note model
@@ -36,8 +37,5 @@ var ArticleSchema = new Schema({
   }
 });
 
-// This creates our model from the above schema, using mongoose's model method
-var Article = mongoose.model("Article", ArticleSchema);
-
 // Export the Article model
-module.exports = Article;
+module.exports = mongoose.model('Article', ArticleSchema);

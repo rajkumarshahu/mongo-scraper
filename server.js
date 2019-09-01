@@ -3,8 +3,6 @@ var express = require("express");
 var logger = require("morgan");
 var mongoose = require("mongoose");
 
-
-
 // Require all models
 var db = require("./models");
 
@@ -39,7 +37,8 @@ require("./routes/article-api-routes.js")(app);
 
 
 // Connect to the Mongo DB
-mongoose.connect(process.env.MONGODB_URI || process.env.MONGODB, { useNewUrlParser: true }, ()=>{
+mongoose.connect(process.env.MONGODB_URI || process.env.MONGODB, { useNewUrlParser: true , useFindAndModify: false,  useCreateIndex: true,
+  useNewUrlParser: true}, ()=>{
   console.log("MongoDB connected...")
 });
 

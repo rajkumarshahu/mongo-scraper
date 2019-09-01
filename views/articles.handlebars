@@ -11,27 +11,24 @@
                     <i class="material-icons">visibility</i>
                 </button>
             </div>
-            <div id="collapse-{{ this._id }}" class="collapsible-body">
+            <div id="collapse-{{ this._id }}" class="collapsible-body" aria-labelledby="heading-{{ this._id }}">
             <h6>Your Comments</h6>
 
-                <ul >
-                {{#each notes}}
+                <ul>
+                {{#each this.note as | noti key|}}
+                    {{#if noti.text}}
                     <li class="">
                         <div class="">
-                            <div class="">
-                                <p>{{noteMessage}}</p>
-                                <p class="">{{ notes.text }}</p>
-                            </div>
-                            <div class="">
-                                <button type="submit" form="hidden-form-{{ this.id }}" class="btn">Delete</button>
-                                <form method="POST" action="/note?_method=DELETE" id="hidden-form-{{ this.id }}" class="">
-                                    <input type="hidden" name="id" value="{{ this.id }}"></input>
-                                </form>
-                            </div>
+                            <p class="">{{ noti.text }}</p>
                         </div>
-
+                        <div class="">
+                            <button type="submit" form="hidden-form-{{ noti._id }}" class="btn secondary-content">Delete</button>
+                            <form method="POST" action="/deleteNote" id="hidden-form-{{ noti._id }}" class="">
+                                <input type="hidden" name="id" value="{{ noti._id }}"></input>
+                            </form>
+                        </div>
                     </li>
-
+                    {{/if}}
                 {{/each}}
                 </ul>
                         <!-- Modal Trigger -->
@@ -44,7 +41,7 @@
                                 <form action="/submit" class="form" method="POST">
                                     <div class="form-group">
                                         <textarea class="form-control" rows="7" name="text"></textarea>
-                                        <input type="hidden" name="title" value="{{ this.title }}"></input>
+                                        <input type="hidden" name="article_id" value="{{ this._id }}"></input>
                                         <hr>
                                         <button type="submit" class="btn">Save changes</button>
                                     </div>
