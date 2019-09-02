@@ -16,18 +16,20 @@
                 </button>
             </div>
             <div id="collapse-{{ this._id }}" class="collapsible-body" aria-labelledby="heading-{{ this._id }}">
-            <h4>Your Comments</h4>
+            <h4 class="center-align">Your Comments</h4>
                 <ul>
                 {{#each this.note as | noti key|}}
 
                     {{#if noti.text}}
                     <li>
                         <div class="row">
-                            <p>
-                             &emsp;{{ noti.text }}
+                            <div class="col s10">
+                             <i class="material-icons tooltipped" data-position="bottom" data-tooltip="Your comment!">comment</i> {{ noti.text }}
+                             </div>
+                             <div class="col s2">
                                 <button type="submit" form="hidden-form-{{ noti._id }}" class="btn red secondary-content"><i class="material-icons tooltipped" data-position="bottom" data-tooltip="Delete this comment!">delete</i></button>
                             </p>
-                            <hr>
+
                             <form method="POST" action="/deleteNote" id="hidden-form-{{ noti._id }}" class="">
                                 <input type="hidden" name="id" value="{{ noti._id }}"></input>
                             </form>
