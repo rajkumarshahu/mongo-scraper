@@ -1,3 +1,11 @@
 footer{
     position: sticky;
 }
+
+.btn-block {
+    width: 100%;
+}
+
+.brand-logo{
+    font-family: 'Montserrat', sans-serif;
+}

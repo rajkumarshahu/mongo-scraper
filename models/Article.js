@@ -8,34 +8,35 @@ var ArticleSchema = new Schema({
   title: {
     type: String,
     trim: true,
-    required: true
+    required: true,
   },
   link: {
     type: String,
     required: true,
-    unique:true
+    unique: true,
   },
-  snippet:{
-      type: String,
-      trim: true
+  snippet: {
+    type: String,
+    trim: true,
   },
-  imageUrl:{
-    type: String
-},
+  imageUrl: {
+    type: String,
+  },
   timestamp: {
     type: Date,
-    default: Date.now
-},
-
+    default: Date.now,
+  },
 
   // `note` is an object that stores a Note id
   // The ref property links the ObjectId to the Note model
   // This allows us to populate the Article with an associated Note
-  note: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Note'
-  }]
+  note: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Note",
+    },
+  ],
 });
 
 // Export the Article model
-module.exports = mongoose.model('Article', ArticleSchema);
+module.exports = mongoose.model("Article", ArticleSchema);

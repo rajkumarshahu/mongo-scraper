@@ -1,7 +1,3 @@
-// *********************************************************************************
-// api-routes.js - this file offers a set of routes for displaying and saving data to the db
-// *********************************************************************************
-
 // Dependencies
 // =============================================================
 var axios = require("axios");
@@ -18,11 +14,10 @@ var getAllLinks = function(article) {
 module.exports = function(app) {
   app.get("/", function(req, res) {
     db.Article.find({}, null, { sort: { created: -1 } }, function(err, data) {
-      console.log(data);
       if (data.length === 0) {
         res.render("message", {
           message:
-            "No articles saved. Please click Scrape it button to get news from BBC.",
+            "No articles saved. Please click Scrape it button to get news from Al Jazeera.",
         });
       } else {
         res.render("index", { articles: data });
@@ -32,14 +27,7 @@ module.exports = function(app) {
 
   app.get("/note", function(req, res) {
     db.Note.find({}, null, function(err, data) {
-      console.log(data);
-      if (data.length === 0) {
-        res.render("notemessage", {
-          noteMessage: "No notes saved. Please click add note  button.",
-        });
-      } else {
-        res.render("articles", { notes: data });
-      }
+      res.render("articles", { notes: data });
     });
   });
   // scrapped page is index
@@ -123,17 +111,11 @@ module.exports = function(app) {
           // If error send error
           res.send(err);
         } else {
-          //console.log(articles);
-          // Save each article document into an array
-          // var allSavedArticles = articles.map(function(article) {
-          //   return article;
-          // });
           // Render the array in the articles route for handlebars
           res.render("articles", { articles: articles });
         }
       });
   });
-
 
   // Route for saving a new Note to the db and associating it with a article
   app.post("/submit", function(req, res) {
@@ -147,35 +129,29 @@ module.exports = function(app) {
         db.Note.create({
           _article: article.id,
           text: note.text,
-        }).then(function(dbNote) {
-            // console.log('dbnote');
-            // console.log(dbNote);
-            // console.log('note article-id');
-            // console.log(note.article_id);
-            // If a Note was created successfully, find one User (there's only one) and push the new Note's _id to the User's `notes` array
-            // { new: true } tells the query that we want it to return the updated User -- it returns the original by default
-            // Since our mongoose query returns a promise, we can chain another `.then` which receives the result of the query
+        })
+          .then(function(dbNote) {
             return db.Article.findOneAndUpdate(
               { _id: note.article_id },
               { $push: { note: dbNote._id } },
               { new: true }
             );
-        }).then(function(dbArticle) {
-          // If the User was updated successfully, send it back to the client
-          res.redirect("/articles");
-        })
-        .catch(function(err) {
-          // If an error occurs, send it back to the client
-          res.json(err);
-        });
+          })
+          .then(function(dbArticle) {
+            // If the User was updated successfully, send it back to the client
+            res.redirect("/articles");
+          })
+          .catch(function(err) {
+            // If an error occurs, send it back to the client
+            res.json(err);
+          });
       }
-    )
+    );
   });
 
   // Delete articles and notes
   app.get("/delete", function(req, res) {
-    db.Note.deleteMany()
-    .catch(function(err) {
+    db.Note.deleteMany().catch(function(err) {
       // If an error occurred, send it to the client
       res.json(err);
     });
@@ -195,18 +171,16 @@ module.exports = function(app) {
     // Load the req.body.id into a variable for ease of use
     var noteId = req.body.id;
 
-    db.Note.find({_id:noteId})
-    .exec(function(err, note) {
-
-      if(!note[0]._article) {
-        console.log('Error!');
+    db.Note.find({ _id: noteId }).exec(function(err, note) {
+      if (!note[0]._article) {
+        console.log("Error!");
         return false;
       }
       db.Article.updateOne(
-        {_id: note[0]._article},
-        {$pull : {note: noteId }},
-        function (err, numAffected) {
-          if(err) {
+        { _id: note[0]._article },
+        { $pull: { note: noteId } },
+        function(err, numAffected) {
+          if (err) {
             console.log(err);
           } else {
             db.Note.remove({ _id: noteId }, function(err, note) {
@@ -222,6 +196,5 @@ module.exports = function(app) {
         }
       );
     });
-
   });
 };

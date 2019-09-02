@@ -7,7 +7,7 @@ var Schema = mongoose.Schema;
 var NoteSchema = new Schema({
   _article: {
     type: String,
-    ref: "Article"
+    ref: "Article",
   },
   text: {
     type: String,
@@ -18,6 +18,5 @@ var NoteSchema = new Schema({
   },
 });
 
-
 // Export the Note model
-module.exports = mongoose.model('Note', NoteSchema);
+module.exports = mongoose.model("Note", NoteSchema);
