@@ -1,8 +1,9 @@
-<div id="accordion" aria-multiselectable="true">
-    <div class="card-panel teal lighten-2 center-align">
+<div class="card-panel teal lighten-2 center-align">
         <h4 class="center-align grey-text text-lighten-5">Your Saved Articles</h4>
     </div>
+<div id="accordion" aria-multiselectable="true">
 {{#each articles}}
+
     <ul class="collapsible">
         <li>
             <div class="collapsible-header" id="heading-{{ this._id }}">
@@ -61,8 +62,11 @@
     </ul>
      {{else}}
         <div class="card-panel teal lighten-2 center-align">
-            <h3 class="grey-text text-lighten-5">You have not saved any articles yet.</h3>
+            <h5 class="grey-text text-lighten-5">You have not saved any articles yet.</h5>
             <button class="waves-effect waves-light pulse btn-large" id="scrape-btn">Scrape news and save</button>
         </div>
+        <div class="">
+    <img class="materialboxed" width="100%" src="/assets/img/newspaper-background.jpg" alt="news paper bg">
+</div>
 {{/each}}
 </div>
