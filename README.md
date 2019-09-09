@@ -36,11 +36,14 @@ node server (to start the server)
 * HTML
 * CSS
 * JavaScript
-* jQuery
 * nodejs
 * Express
-* Bootstrap 4
-* Object-relational mapping (ORM)
+* Materialize
+* Mongoose
+* MongoDB
+* axios
+* cheerio
+* express-handlebars
 
 ## Deployment
 
